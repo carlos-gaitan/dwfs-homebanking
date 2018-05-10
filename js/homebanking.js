@@ -89,15 +89,19 @@ function restarDinero(cantidadARestar) {
   actualizarSaldoEnPantalla();
 }
 
-// TODO:
-// // FIXME:
-// todavia no la termine, la pateo para adelante.
-// function validarPrompt(cantidad) {
-//   if (cantidad != null)
-//     cantidad = parseInt(cantidad);
-//   else
-//     alert ('Operacion cancelada.');
-//   }
+// FIXME: No me funciona ni console.log ni tamopco el alert.
+function validaPrompt(dato) {
+  console.log('entro a validaPrompt');
+  if(dato == null) {
+    console.log('Usted cancelo la operacion!');
+    return false;
+  } if (dato == '') {
+      alert('Usted no ingreso ningun monto. Se cancela solicitud');
+      return false;
+    } else {
+        return true;
+    }
+}
 
 function haySaldoDisponible(valor) {
 // TODO: cambiar el if por return valor <= saldoCuenta esto es lo mismo que lo de abajo.
@@ -142,8 +146,13 @@ actualizarLimiteEnPantalla();
 //Funciones que tenes que completar
 function cambiarLimiteDeExtraccion() {
   var limiteAnterior = datosDeUsuario[indiceDeUsuario].limiteExtraccion;
-  datosDeUsuario[indiceDeUsuario].limiteExtraccion = prompt('Ingrese el nuevo limite de extraccion que desea setear');
-  alert('Su anterior limite de extraccion era $' + limiteAnterior + '\n Su nuevo limite de extraccion es $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
+  var monto = prompt('Ingrese el nuevo limite de extraccion que desea setear');
+  if ((validaPrompt) && (monto > 0)) {
+    datosDeUsuario[indiceDeUsuario].limiteExtraccion = monto;
+    alert('Su anterior limite de extraccion era $' + limiteAnterior + '\n Su nuevo limite de extraccion es $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
+  } else {
+    alert ('Usted ha ingresado un valor incorrecto: '+ monto + '\nPor favor gestione nuevamente su solicitud.');
+  }
 }
 
 function extraerDinero() {
@@ -250,21 +259,45 @@ function iniciarSesion() {
   var usuario;
   var clave;
   var i;
+
   usuario = prompt('USUARIO:');
-  clave = prompt('CLAVE:');
-  i = buscarUsuario(usuario);
-  if (i < 0) {
-    alert('Usuario o clave incorrecta');
-  } else if (datosDeUsuario[i].claveUsuario == clave) {
-      // Esta bien que le tire el indice del usuario del array a una global, no queda feo?
-      // Estaria bueno que se lo valla pasando por parametro de funcion a funcion?
-      indiceDeUsuario = i;
-      alert('Bienvenido ' + usuario);
-  } else {
-      retenerSaldo(i);
-      alert('Usuario o clave incorrecta.\nComuniquese con el banco para continuar.');
+  if (validaPrompt(usuario)) {
+    i = buscarUsuario(usuario);
+    if (i > 0) {
+      clave = prompt('CLAVE:');
+      if (validaPrompt(clave)) {
+        if (datosDeUsuario[i].claveUsuario == clave) {
+          indiceDeUsuario = i;
+          alert('Bienvenido ' + usuario);
+        } else {
+            //else de la clave
+            //retenerSaldo(i);
+            alert('Clave incorrecta.\nSe retendra su saldo por seguridad\nComuniquese con el banco para continuar.');
+            }
+      } else {
+        //else de validapromp
+        alert('Intente loguearse nuevamente.');
+        }
+    } else {
+      //else de no existe usuario
+      }
   }
 }
+
+
+
+//   if (i < 0) {
+//     alert('Usuario o clave incorrecta');
+//   } else if (datosDeUsuario[i].claveUsuario == clave) {
+//       // Esta bien que le tire el indice del usuario del array a una global, no queda feo?
+//       // Estaria bueno que se lo valla pasando por parametro de funcion a funcion?
+//       indiceDeUsuario = i;
+//       alert('Bienvenido ' + usuario);
+//   } else {
+//       retenerSaldo(i);
+//       alert('Usuario o clave incorrecta.\nComuniquese con el banco para continuar.');
+//   }
+// }
 
 //Funciones que actualizan el valor de las variables en el HTML
 function cargarNombreEnPantalla() {
