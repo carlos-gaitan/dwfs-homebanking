@@ -1,4 +1,4 @@
-//Declaración de variables
+ //Declaración de variables
 var indiceDeUsuario = -1;
 var datosDeUsuario = [
     {
