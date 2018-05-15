@@ -113,6 +113,7 @@ function haySaldoDisponible(valor) {
 }
 
 function verficarCuentaAmiga(cuenta) {
+  // TODO: aca tengo que preguntar si tengo cuentas amigas y luego entrar aca!
   for( var i = 0; i < datosDeUsuario[indiceDeUsuario].cuentaAmiga.length; i++ ) {
     console.log('cuenta: ' + cuenta + '\ncuentaAmiga[' + i + ']: '+ datosDeUsuario[indiceDeUsuario].cuentaAmiga[i].numero);
     // conviene usar un while si o si. CAMBIARLO A WHILE
