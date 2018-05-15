@@ -1,3 +1,4 @@
+// TODO: poner el evento para cargar el script despues que cargue el DOM
 //Declaración de variables
 var indiceDeUsuario = -1;
 var datosDeUsuario = [
