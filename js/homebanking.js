@@ -49,7 +49,17 @@ var datosDeUsuario = [
       claveUsuario: 0000,
       saldoCuenta:0,
       saldoCuentaRetenido:0,
-      limiteExtraccion:0
+      limiteExtraccion:0,
+      cuentaAmiga: [
+          {
+              nombre: '',
+              numero: 0
+          },
+          {
+              nombre: '',
+              numero: '0'
+          },
+      ],
     },
     {
       nombreUsuario: 'diego',
@@ -162,27 +172,35 @@ function extraerDinero() {
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
   cantidadAExtraer = prompt('Ingrese la cantidad de dinero que desea extraer');
   cantidadAExtraer = parseInt(cantidadAExtraer);
-  if (haySaldoDisponible(cantidadAExtraer) === false) {
-    alert('No hay sufuciente saldo en la cuenta');
-  } else if(cantidadAExtraer > datosDeUsuario[indiceDeUsuario].limiteExtraccion) {
-      alert('No puede extraer mas de: $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
-    } else if((cantidadAExtraer % 100) != 0) {
-        alert('El cajero solo puede entregar billetes de 100, por favor elija un importe multiplo de 100');
-      } else {
-        restarDinero(cantidadAExtraer);
-        alert('Has extraido: $' + cantidadAExtraer+';\nSaldo anterior: $' + saldoAnterior + ';\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta + '.');
-      }
-}
+  if (validaPrompt(cantidadAExtraer)) {
+    if (haySaldoDisponible(cantidadAExtraer) === false) {
+      alert('No hay sufuciente saldo en la cuenta');
+    } else if(cantidadAExtraer > datosDeUsuario[indiceDeUsuario].limiteExtraccion) {
+        alert('No puede extraer mas de: $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
+      } else if((cantidadAExtraer % 100) != 0) {
+          alert('El cajero solo puede entregar billetes de 100, por favor elija un importe multiplo de 100');
+        } else {
+          restarDinero(cantidadAExtraer);
+          alert('Has extraido: $' + cantidadAExtraer+';\nSaldo anterior: $' + saldoAnterior + ';\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta + '.');
+        }
+    } else {
+        alert('Operacion Cancelada');
+    }
+    }
 
 function depositarDinero() {
   var cantidadADepositar;
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
   cantidadADepositar = prompt("Ingrese la cantidad de dinero que desea depositar");
-  cantidadADepositar = parseInt(cantidadADepositar);
+  if (validaPrompt(cantidadAExtraer)) {
+    cantidadADepositar = parseInt(cantidadADepositar);
 
-  saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
-  sumarDinero(cantidadADepositar);
-  alert('Has depositado: $' + cantidadADepositar + '\nSaldo anterior: $' + saldoAnterior + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+    saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
+    sumarDinero(cantidadADepositar);
+    alert('Has depositado: $' + cantidadADepositar + '\nSaldo anterior: $' + saldoAnterior + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+  } else {
+      alert('hahahahahahaha')
+  }
 }
 
 function pagarServicio() {
@@ -261,29 +279,35 @@ function iniciarSesion() {
   var usuario;
   var clave;
   var i;
-
-  usuario = prompt('USUARIO:');
-  if (validaPrompt(usuario)) {
-    i = buscarUsuario(usuario);
-    if (i > 0) {
-      clave = prompt('CLAVE:');
-      if (validaPrompt(clave)) {
-        if (datosDeUsuario[i].claveUsuario == clave) {
-          indiceDeUsuario = i;
-          alert('Bienvenido ' + usuario);
+  var currentUser = localStorage.getItem("indiceDeUsuario");
+  if (currentUser) {
+    indiceDeUsuario = parseInt(currentUser);
+  } else {
+    usuario = prompt('USUARIO:');
+    if (validaPrompt(usuario)) {
+      i = buscarUsuario(usuario);
+      if (i > 0) {
+        clave = prompt('CLAVE:');
+        if (validaPrompt(clave)) {
+          if (datosDeUsuario[i].claveUsuario == clave) {
+            indiceDeUsuario = i;
+            localStorage.setItem("indiceDeUsuario", i);
+            alert('Bienvenido ' + usuario);
+          } else {
+              //else de la clave
+              //retenerSaldo(i);
+              alert('Clave incorrecta.\nSe retendra su saldo por seguridad\nComuniquese con el banco para continuar.');
+          }
         } else {
-            //else de la clave
-            //retenerSaldo(i);
-            alert('Clave incorrecta.\nSe retendra su saldo por seguridad\nComuniquese con el banco para continuar.');
-            }
-      } else {
-        //else de validapromp
-        alert('Intente loguearse nuevamente.');
+          //else de validapromp
+          alert('Intente loguearse nuevamente.');
         }
-    } else {
-      //else de no existe usuario
+      } else {
+        //else de no existe usuario
       }
+    }
   }
+
 }
 
 
