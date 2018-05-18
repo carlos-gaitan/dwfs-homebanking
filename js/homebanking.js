@@ -1,6 +1,6 @@
 // TODO: poner el evento para cargar el script despues que cargue el DOM
 //Declaración de variables
-var msgOperacionCancelada = 'Operacion cancelada por el usuario';
+var msgOperacionCancelada = 'Operacion cancelada!';
 var indiceDeUsuario = -1;
 var datosDeUsuario = [
     {
@@ -303,6 +303,15 @@ function transferirDinero() {
   }
 }
 
+function cerrarSesion() {
+  localStorage.removeItem("indiceDeUsuario");
+  alert('Gracias por utilizar nuestros servicios, Se cerro su sesion, 0800-BANCO-GAITAN');
+  iniciarSesion();
+  cargarNombreEnPantalla();
+  actualizarSaldoEnPantalla();
+  actualizarLimiteEnPantalla();
+}
+
 function iniciarSesion() {
   var usuario;
   var clave;
@@ -310,6 +319,7 @@ function iniciarSesion() {
   var i = -1;
   var currentUser = localStorage.getItem("indiceDeUsuario");
   if (currentUser) {
+    // FIXME: Esta bien este parseint?
     indiceDeUsuario = parseInt(currentUser);
   } else {
     usuario = prompt('Ingrese su nombre de USUARIO:');
@@ -323,17 +333,19 @@ function iniciarSesion() {
         if (contadorDeIntentos > 0) {
           indiceDeUsuario = i;
           localStorage.setItem("indiceDeUsuario", i);
+          console.log('info: iniciarSesion --> Se loguea usuario con id:' + indiceDeUsuario);
           alert('Bienvenido ' + usuario);
-        } else if (!validaPrompt(clave)) {
-          alert(msgOperacionCancelada);
+          // TODO: hay que hacer un flag de logueo
+        } else {
+          // TODO: falta hacer la funcion retener saldo y y borrar el localstorage
+          //retenerSaldo(i);
+          alert(msgOperacionCancelada + 'y ademas le retenemos el saldo');
         }
       } else {
-        // TODO: falta hacer la funcion retener saldo.
-        //retenerSaldo(i);
-        alert('Clave incorrecta.\nSe retendra su saldo por seguridad\nComuniquese con el banco para continuar.');
+        alert('El usuario que ha ingresado no existe.\nIntente loguearse nuevamente o comuniquese con el 0800-BANCO-GAITAN');
       }
     } else {
-        alert('Intente loguearse nuevamente.');
+        alert('Intente loguearse nuevamente.\nPreste atencion al ingresar el usuario y si continua con inconvenientes, comuniquese con el 0800-BANCO-GAITAN');
     }
   }
 }
@@ -344,7 +356,7 @@ function cargarNombreEnPantalla() {
 }
 
 function actualizarSaldoEnPantalla() {
-console.log('entra a la funcion sactualizar saldo en pantall con un id:' + indiceDeUsuario);
+console.log('info: actualizarSaldoEnPantalla --> Se loguea usuario con id:' + indiceDeUsuario);
 document.getElementById("saldo-cuenta").innerHTML = "$" + datosDeUsuario[indiceDeUsuario].saldoCuenta;
 }
 
