@@ -1,5 +1,6 @@
 // TODO: poner el evento para cargar el script despues que cargue el DOM
 //Declaración de variables
+var msgOperacionCancelada = 'Operacion cancelada por el usuario';
 var indiceDeUsuario = -1;
 var datosDeUsuario = [
     {
@@ -52,12 +53,20 @@ var datosDeUsuario = [
       limiteExtraccion:0,
       cuentaAmiga: [
           {
-              nombre: '',
-              numero: 0
+              nombre: 'Cuenta amiga 1',
+              numero: 12345678
           },
           {
-              nombre: '',
-              numero: '0'
+              nombre: 'Cuenta amiga 2',
+              numero: '00000000'
+          },
+          {
+              nombre: 'Cuenta amiga 3',
+              numero: 11111111
+          },
+          {
+              nombre: 'Cuenta amiga 3',
+              numero: 22222222
           },
       ],
     },
@@ -89,7 +98,7 @@ var datosDeUsuario = [
 ];
 
 
-//Declaracion de funciones que piden en 3.2  Guía: parte 2 de 3
+//Declaracion de funciones
 function sumarDinero(cantidadASumar) {
   datosDeUsuario[indiceDeUsuario].saldoCuenta = datosDeUsuario[indiceDeUsuario].saldoCuenta + cantidadASumar;
   actualizarSaldoEnPantalla();
@@ -100,14 +109,12 @@ function restarDinero(cantidadARestar) {
   actualizarSaldoEnPantalla();
 }
 
-// FIXME: No me funciona ni console.log ni tamopco el alert.
 function validaPrompt(dato) {
-  console.log('entro a validaPrompt');
   if(dato == null) {
-    console.log('Usted cancelo la operacion!');
+    console.log('warning: validaPrompt --> cancela operacion');
     return false;
   } if (dato == '') {
-      alert('Usted no ingreso ningun monto. Se cancela solicitud');
+      console.log('warning: validaPrompt --> acepta operacion con campo vacio');
       return false;
     } else {
         return true;
@@ -115,39 +122,51 @@ function validaPrompt(dato) {
 }
 
 function haySaldoDisponible(valor) {
-// TODO: cambiar el if por return valor <= saldoCuenta esto es lo mismo que lo de abajo.
-  if (valor <= datosDeUsuario[indiceDeUsuario].saldoCuenta) {
-    return true;
-  } else {
-    return false;
-  }
+  return valor <= datosDeUsuario[indiceDeUsuario].saldoCuenta;
 }
 
 function verficarCuentaAmiga(cuenta) {
-  // TODO: aca tengo que preguntar si tengo cuentas amigas y luego entrar aca!
-  for( var i = 0; i < datosDeUsuario[indiceDeUsuario].cuentaAmiga.length; i++ ) {
-    console.log('cuenta: ' + cuenta + '\ncuentaAmiga[' + i + ']: '+ datosDeUsuario[indiceDeUsuario].cuentaAmiga[i].numero);
-    // conviene usar un while si o si. CAMBIARLO A WHILE
-    // devuelvo el indice el indice o -1 sino me sirve
-    if ( cuenta == datosDeUsuario[indiceDeUsuario].cuentaAmiga[i].numero) {
-      return true;
+  var i = 0;
+  if (datosDeUsuario[indiceDeUsuario].cuentaAmiga) {
+    while(i <= datosDeUsuario[indiceDeUsuario].cuentaAmiga.length-1 && datosDeUsuario[indiceDeUsuario].cuentaAmiga[i].numero !== cuenta) {
+      i++;
+    }
+    if(i == datosDeUsuario[indiceDeUsuario].cuentaAmiga.length-1) {
+      return -1;
+      console.log('warning: verificarCuentaAmiga --> la cuenta no existe ');
+    } else {
+      return i;
+    }
+
+  } else {
+    return -1;
+    console.log('warning: verificarCuentaAmiga --> no hay cuentas asociadas');
+  }
+}
+
+function buscarUsuario(usuario) {
+  for (var i = 0; i < datosDeUsuario.length; i++) {
+    if (datosDeUsuario[i].nombreUsuario === usuario) {
+      return i;
     }
   }
-  return false;
+  return -1;
+  console.log('warning: buscarUsuario -> el usuario no existe');
 }
-function buscarUsuario(usuario) {
-  var i = 0;
-  while( i <= (datosDeUsuario.length-1) && datosDeUsuario[i].nombreUsuario !== usuario  ) {
-    i++;
-  }
-  if (i === datosDeUsuario.length) {
-    console.log('El usuario no existe.');
-    return -1;
-  } else {
-      console.log('la posicion del usuario en el vector es: '+i);
-      return i;
-  }
-}
+
+// viejaFuncionBuscarUsuario(usuario) es tan fea que no quise borrarla
+// function viejaFuncionBuscarUsuario(usuario) {
+//   var i = 0;
+//   while ((i <= (datosDeUsuario.length-1)) && (datosDeUsuario[i].nombreUsuario !== usuario)) {
+//     i++;
+//   }
+//   if (i == datosDeUsuario.length-1) {
+//     return -1;
+//     console.log('warning: buscarUsuario -> el usuario no existe');
+//   } else {
+//       return i;
+//   }
+// }
 
 //Ejecución de las funciones que actualizan los valores de las variables en el HTML
 iniciarSesion();
@@ -159,171 +178,165 @@ actualizarLimiteEnPantalla();
 function cambiarLimiteDeExtraccion() {
   var limiteAnterior = datosDeUsuario[indiceDeUsuario].limiteExtraccion;
   var monto = prompt('Ingrese el nuevo limite de extraccion que desea setear');
-  if ((validaPrompt) && (monto > 0)) {
-    datosDeUsuario[indiceDeUsuario].limiteExtraccion = monto;
-    alert('Su anterior limite de extraccion era $' + limiteAnterior + '\n Su nuevo limite de extraccion es $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
+  if (validaPrompt(monto)) {
+    if (monto>-1) {
+      datosDeUsuario[indiceDeUsuario].limiteExtraccion = monto;
+      alert('Su anterior limite de extraccion era $' + limiteAnterior + '\n Su nuevo limite de extraccion es $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
+    } else {
+      alert('Debe ingresar un limite mayor o igual a 0');
+    }
   } else {
-    alert ('Usted ha ingresado un valor incorrecto: '+ monto + '\nPor favor gestione nuevamente su solicitud.');
+    alert (msgOperacionCancelada);
   }
 }
 
+// TODO: estaria bueno que el limite de extraccion tenga un incremental durante el dia y que se valla sumando hasta el otro dia donde deberia volver a 0.
 function extraerDinero() {
   var cantidadAExtraer;
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
   cantidadAExtraer = prompt('Ingrese la cantidad de dinero que desea extraer');
-  cantidadAExtraer = parseInt(cantidadAExtraer);
   if (validaPrompt(cantidadAExtraer)) {
+    // TODO: Preguntar si estan bien puestos estos parseInt, si son al pedo o que!
+    cantidadAExtraer = parseInt(cantidadAExtraer);
     if (haySaldoDisponible(cantidadAExtraer) === false) {
       alert('No hay sufuciente saldo en la cuenta');
     } else if(cantidadAExtraer > datosDeUsuario[indiceDeUsuario].limiteExtraccion) {
         alert('No puede extraer mas de: $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
-      } else if((cantidadAExtraer % 100) != 0) {
+    } else if((cantidadAExtraer % 100) != 0) {
           alert('El cajero solo puede entregar billetes de 100, por favor elija un importe multiplo de 100');
         } else {
           restarDinero(cantidadAExtraer);
           alert('Has extraido: $' + cantidadAExtraer+';\nSaldo anterior: $' + saldoAnterior + ';\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta + '.');
         }
-    } else {
-        alert('Operacion Cancelada');
-    }
-    }
+  } else {
+        alert(msgOperacionCancelada);
+  }
+}
 
 function depositarDinero() {
   var cantidadADepositar;
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
   cantidadADepositar = prompt("Ingrese la cantidad de dinero que desea depositar");
-  if (validaPrompt(cantidadAExtraer)) {
+  if (validaPrompt(cantidadADepositar)) {
     cantidadADepositar = parseInt(cantidadADepositar);
-
     saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
     sumarDinero(cantidadADepositar);
     alert('Has depositado: $' + cantidadADepositar + '\nSaldo anterior: $' + saldoAnterior + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
   } else {
-      alert('hahahahahahaha')
+      alert(msgOperacionCancelada);
   }
 }
 
 function pagarServicio() {
-  var aguaImporte=350;
-  var luzImporte=210;
-  var internetImporte=570;
-  var telefonoImporte=425;
+  var aguaImporte = 350;
+  var luzImporte = 210;
+  var internetImporte = 570;
+  var telefonoImporte = 425;
   var saldoAnterior;
-  var opcion = prompt('Ingrese la opcion que desee:\n1.- Agua\n2.- Luz\n3.- Internet\n4.-Telefono')
-  switch (opcion) {
-    case '1':
-      if(haySaldoDisponible(aguaImporte)) {
-        saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
-        restarDinero(aguaImporte);
-        alert('Has pagado el servicio de Agua.\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ aguaImporte + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
-      } else {
-        alert('No tiene saldo suficiente para realizar el pago');
-      }
-      break;
-    case '2':
-      if (haySaldoDisponible(luzImporte)) {
-        saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
-        restarDinero(luzImporte);
-        alert('Has pagado el servicio de Agua.\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ luzImporte + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
-      } else {
-        alert('No tiene saldo suficiente para realizar el pago');
-      }
-      break;
-    case '3':
-      if (haySaldoDisponible(internetImporte)) {
-        saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
-        restarDinero(luzImporte);
-        alert('Has pagado el servicio de Agua.\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ internetImporte + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
-      } else {
-        alert('No tiene saldo suficiente para realizar el pago');
-      }
-      break;
-    case '4':
-      if (haySaldoDisponible(telefonoImporte)) {
-        saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
-        restarDinero(luzImporte);
-        alert('Has pagado el servicio de Agua.\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ telefonoImporte + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
-      } else {
-        alert('No tiene saldo suficiente para realizar el pago');
-      }
-      break;
+  // TODO: aca en vez de poner este prompt feo deberia poner algun combo box.
+  var opcion = prompt('Ingrese la opcion que desee:\n1.- Agua\n2.- Luz\n3.- Internet\n4.-Telefono');
+  if (validaPrompt(opcion)) {
+    switch (opcion) {
+      case '1':
+        if(haySaldoDisponible(aguaImporte)) {
+          saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
+          restarDinero(aguaImporte);
+          alert('Has pagado el servicio de Agua.\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ aguaImporte + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+        } else {
+          alert('No tiene saldo suficiente para realizar el pago');
+        }
+        break;
+      case '2':
+        if (haySaldoDisponible(luzImporte)) {
+          saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
+          restarDinero(luzImporte);
+          alert('Has pagado el servicio de Luz.\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ luzImporte + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+        } else {
+          alert('No tiene saldo suficiente para realizar el pago');
+        }
+        break;
+      case '3':
+        if (haySaldoDisponible(internetImporte)) {
+          saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
+          restarDinero(luzImporte);
+          alert('Has pagado el servicio de Internet.\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ internetImporte + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+        } else {
+          alert('No tiene saldo suficiente para realizar el pago');
+        }
+        break;
+      case '4':
+        if (haySaldoDisponible(telefonoImporte)) {
+          saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
+          restarDinero(luzImporte);
+          alert('Has pagado el servicio de Telefono.\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ telefonoImporte + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+        } else {
+          alert('No tiene saldo suficiente para realizar el pago');
+        }
+        break;
 
-    default:
-      alert('No eligio una opcion valida');
-
+      default:
+        alert('No eligio una opcion valida');
+    }
+  } else {
+    alert(msgOperacionCancelada);
   }
-
 }
 
 function transferirDinero() {
-  var cantidadATransferir = prompt('Ingrese la cantidad de dinero que desea depositar');
+  var cantidadATransferir = prompt('Ingrese la cantidad de dinero que desea transferir');
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
-
-  if (haySaldoDisponible(cantidadATransferir) === false) {
-    alert('No hay saldo suficiente para realizar la transferencia');
+  if (validaPrompt(cantidadATransferir)) {
+    if (haySaldoDisponible(cantidadATransferir) === false) {
+      alert('No hay saldo suficiente para realizar la transferencia');
     } else {
-      cuenta= prompt('Ingrese el numero de cuenta al que desea transferir el dinero');
-      //cuenta = parseInt(cuentaAmiga);
-      if (verficarCuentaAmiga(cuenta) === false){
-        alert('El numero de cuenta ingresado no existe en su lista de cuentas amigas');
-      } else {
-        restarDinero(cantidadATransferir);
-        alert('Has transferido a la cuenta amiga:' + cuentaAmiga + '\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ cantidadATransferir + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
-      }
+        cuenta= prompt('Ingrese el numero de cuenta al que desea transferir el dinero');
+        //cuenta = parseInt(cuentaAmiga);
+        if (verficarCuentaAmiga(cuenta) === false){
+          alert('El numero de cuenta ingresado no existe en su lista de cuentas amigas');
+        } else {
+          restarDinero(cantidadATransferir);
+          alert('Has transferido a la cuenta amiga:' + cuentaAmiga + '\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ cantidadATransferir + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+        }
     }
+  } else {
+      alert(msgOperacionCancelada);
   }
-
-
+}
 
 function iniciarSesion() {
   var usuario;
   var clave;
-  var i;
+  var contadorDeIntentos = 3;
+  var i = -1;
   var currentUser = localStorage.getItem("indiceDeUsuario");
   if (currentUser) {
     indiceDeUsuario = parseInt(currentUser);
   } else {
-    usuario = prompt('USUARIO:');
+    usuario = prompt('Ingrese su nombre de USUARIO:');
     if (validaPrompt(usuario)) {
       i = buscarUsuario(usuario);
-      if (i > 0) {
-        clave = prompt('CLAVE:');
-        if (validaPrompt(clave)) {
-          if (datosDeUsuario[i].claveUsuario == clave) {
-            indiceDeUsuario = i;
-            localStorage.setItem("indiceDeUsuario", i);
-            alert('Bienvenido ' + usuario);
-          } else {
-              //else de la clave
-              //retenerSaldo(i);
-              alert('Clave incorrecta.\nSe retendra su saldo por seguridad\nComuniquese con el banco para continuar.');
-          }
-        } else {
-          //else de validapromp
-          alert('Intente loguearse nuevamente.');
+      if (i >= 0) {
+        do {
+          clave = prompt('Ingrese su CLAVE:\nUsted tendra ' + contadorDeIntentos + ' intentos para ingresar la clave de forma correcta, de lo contario su saldo sera retenido.');
+          contadorDeIntentos--;
+        } while (!validaPrompt(clave) || datosDeUsuario[i].claveUsuario != clave && contadorDeIntentos > 0);
+        if (contadorDeIntentos > 0) {
+          indiceDeUsuario = i;
+          localStorage.setItem("indiceDeUsuario", i);
+          alert('Bienvenido ' + usuario);
+        } else if (!validaPrompt(clave)) {
+          alert(msgOperacionCancelada);
         }
       } else {
-        //else de no existe usuario
+        // TODO: falta hacer la funcion retener saldo.
+        //retenerSaldo(i);
+        alert('Clave incorrecta.\nSe retendra su saldo por seguridad\nComuniquese con el banco para continuar.');
       }
+    } else {
+        alert('Intente loguearse nuevamente.');
     }
   }
-
 }
-
-
-
-//   if (i < 0) {
-//     alert('Usuario o clave incorrecta');
-//   } else if (datosDeUsuario[i].claveUsuario == clave) {
-//       // Esta bien que le tire el indice del usuario del array a una global, no queda feo?
-//       // Estaria bueno que se lo valla pasando por parametro de funcion a funcion?
-//       indiceDeUsuario = i;
-//       alert('Bienvenido ' + usuario);
-//   } else {
-//       retenerSaldo(i);
-//       alert('Usuario o clave incorrecta.\nComuniquese con el banco para continuar.');
-//   }
-// }
 
 //Funciones que actualizan el valor de las variables en el HTML
 function cargarNombreEnPantalla() {
@@ -338,3 +351,4 @@ document.getElementById("saldo-cuenta").innerHTML = "$" + datosDeUsuario[indiceD
 function actualizarLimiteEnPantalla() {
     document.getElementById("limite-extraccion").innerHTML = "Tu límite de extracción es: $" + datosDeUsuario[indiceDeUsuario].limiteExtraccion;
 }
+//tratando de arreglar el head desacoplado
