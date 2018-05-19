@@ -112,14 +112,30 @@ function restarDinero(cantidadARestar) {
 function validaPrompt(dato) {
   if(dato == null) {
     console.log('warning: validaPrompt --> cancela operacion');
+    alert('Operacion cancelada');
     return false;
   } if (dato == '') {
       console.log('warning: validaPrompt --> acepta operacion con campo vacio');
+      alert('Operacion cancelada');
       return false;
-    } else {
+  } else {
         return true;
-    }
+  }
 }
+
+function validaNumeroPositivo(dato) {
+  if(dato > 0) {
+    console.log('info: validaNumeroPositivo --> ingresa validado, numero positivo');
+    return true;
+  } else {
+      console.log('warning: validaNumeroPositivo --> ingresa numero negativo o 0, se cancela operacion');
+      alert('Debe ingresar un numero positivo para poder efectuar la operacion que desea.');
+      return false;
+  }
+}
+
+
+
 
 function haySaldoDisponible(valor) {
   return valor <= datosDeUsuario[indiceDeUsuario].saldoCuenta;
@@ -178,15 +194,9 @@ actualizarLimiteEnPantalla();
 function cambiarLimiteDeExtraccion() {
   var limiteAnterior = datosDeUsuario[indiceDeUsuario].limiteExtraccion;
   var monto = prompt('Ingrese el nuevo limite de extraccion que desea setear');
-  if (validaPrompt(monto)) {
-    if (monto>-1) {
+  if (validaPrompt(monto) && validaNumeroPositivo(monto)) {
       datosDeUsuario[indiceDeUsuario].limiteExtraccion = monto;
       alert('Su anterior limite de extraccion era $' + limiteAnterior + '\n Su nuevo limite de extraccion es $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
-    } else {
-      alert('Debe ingresar un limite mayor o igual a 0');
-    }
-  } else {
-    alert (msgOperacionCancelada);
   }
 }
 
@@ -195,7 +205,7 @@ function extraerDinero() {
   var cantidadAExtraer;
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
   cantidadAExtraer = prompt('Ingrese la cantidad de dinero que desea extraer');
-  if (validaPrompt(cantidadAExtraer)) {
+  if (validaPrompt(cantidadAExtraer) && validaNumeroPositivo(cantidadAExtraer)) {
     // TODO: Preguntar si estan bien puestos estos parseInt, si son al pedo o que!
     cantidadAExtraer = parseInt(cantidadAExtraer);
     if (haySaldoDisponible(cantidadAExtraer) === false) {
@@ -208,8 +218,6 @@ function extraerDinero() {
           restarDinero(cantidadAExtraer);
           alert('Has extraido: $' + cantidadAExtraer+';\nSaldo anterior: $' + saldoAnterior + ';\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta + '.');
         }
-  } else {
-        alert(msgOperacionCancelada);
   }
 }
 
@@ -217,13 +225,13 @@ function depositarDinero() {
   var cantidadADepositar;
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
   cantidadADepositar = prompt("Ingrese la cantidad de dinero que desea depositar");
-  if (validaPrompt(cantidadADepositar)) {
-    cantidadADepositar = parseInt(cantidadADepositar);
-    saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
-    sumarDinero(cantidadADepositar);
-    alert('Has depositado: $' + cantidadADepositar + '\nSaldo anterior: $' + saldoAnterior + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
-  } else {
-      alert(msgOperacionCancelada);
+  if (validaPrompt(cantidadADepositar) && validaNumeroPositivo(cantidadADepositar)) {
+    if (validaNumeroPositivo(cantidadADepositar)) {
+      cantidadADepositar = parseInt(cantidadADepositar);
+      saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
+      sumarDinero(cantidadADepositar);
+      alert('Has depositado: $' + cantidadADepositar + '\nSaldo anterior: $' + saldoAnterior + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+    }
   }
 }
 
@@ -277,15 +285,13 @@ function pagarServicio() {
       default:
         alert('No eligio una opcion valida');
     }
-  } else {
-    alert(msgOperacionCancelada);
   }
 }
 
 function transferirDinero() {
   var cantidadATransferir = prompt('Ingrese la cantidad de dinero que desea transferir');
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
-  if (validaPrompt(cantidadATransferir)) {
+  if (validaPrompt(cantidadATransferir) && validaNumeroPositivo(cantidadATransferir)) {
     if (haySaldoDisponible(cantidadATransferir) === false) {
       alert('No hay saldo suficiente para realizar la transferencia');
     } else {
@@ -298,13 +304,12 @@ function transferirDinero() {
           alert('Has transferido a la cuenta amiga:' + cuentaAmiga + '\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ cantidadATransferir + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
         }
     }
-  } else {
-      alert(msgOperacionCancelada);
   }
 }
 
 function cerrarSesion() {
   localStorage.removeItem("indiceDeUsuario");
+  indiceDeUsuario = -1;
   alert('Gracias por utilizar nuestros servicios, Se cerro su sesion, 0800-BANCO-GAITAN');
   iniciarSesion();
   cargarNombreEnPantalla();
@@ -316,7 +321,7 @@ function iniciarSesion() {
   var usuario;
   var clave;
   var contadorDeIntentos = 3;
-  var i = -1;
+  var indiceDeUsuarioAuxiliar = -1;
   var currentUser = localStorage.getItem("indiceDeUsuario");
   if (currentUser) {
     // FIXME: Esta bien este parseint?
@@ -324,21 +329,22 @@ function iniciarSesion() {
   } else {
     usuario = prompt('Ingrese su nombre de USUARIO:');
     if (validaPrompt(usuario)) {
-      i = buscarUsuario(usuario);
-      if (i >= 0) {
+      indiceDeUsuarioAuxiliar = buscarUsuario(usuario);
+      if (indiceDeUsuarioAuxiliar >= 0) {
         do {
           clave = prompt('Ingrese su CLAVE:\nUsted tendra ' + contadorDeIntentos + ' intentos para ingresar la clave de forma correcta, de lo contario su saldo sera retenido.');
           contadorDeIntentos--;
-        } while (!validaPrompt(clave) || datosDeUsuario[i].claveUsuario != clave && contadorDeIntentos > 0);
+        } while (!validaPrompt(clave) || datosDeUsuario[indiceDeUsuarioAuxiliar].claveUsuario != clave && contadorDeIntentos > 0);
         if (contadorDeIntentos > 0) {
-          indiceDeUsuario = i;
-          localStorage.setItem("indiceDeUsuario", i);
+          indiceDeUsuario = indiceDeUsuarioAuxiliar;
+          localStorage.setItem("indiceDeUsuario", indiceDeUsuarioAuxiliar);
           console.log('info: iniciarSesion --> Se loguea usuario con id:' + indiceDeUsuario);
           alert('Bienvenido ' + usuario);
           // TODO: hay que hacer un flag de logueo
         } else {
           // TODO: falta hacer la funcion retener saldo y y borrar el localstorage
-          //retenerSaldo(i);
+          retenerSaldo(indiceDeUsuarioAuxiliar);
+          localStorage.removeItem("indiceDeUsuario");
           alert(msgOperacionCancelada + 'y ademas le retenemos el saldo');
         }
       } else {
