@@ -141,23 +141,14 @@ function haySaldoDisponible(valor) {
   return valor <= datosDeUsuario[indiceDeUsuario].saldoCuenta;
 }
 
-function verficarCuentaAmiga(cuenta) {
-  var i = 0;
-  if (datosDeUsuario[indiceDeUsuario].cuentaAmiga) {
-    while(i <= datosDeUsuario[indiceDeUsuario].cuentaAmiga.length-1 && datosDeUsuario[indiceDeUsuario].cuentaAmiga[i].numero !== cuenta) {
-      i++;
-    }
-    if(i == datosDeUsuario[indiceDeUsuario].cuentaAmiga.length-1) {
-      return -1;
-      console.log('warning: verificarCuentaAmiga --> la cuenta no existe ');
-    } else {
+function buscarCuentaAmiga(cuenta) {
+  for (var i = 0; i < datosDeUsuario[indiceDeUsuario].cuentaAmiga.length; i++) {
+    if (datosDeUsuario[indiceDeUsuario].cuentaAmiga[i] === cuenta) {
       return i;
     }
-
-  } else {
-    return -1;
-    console.log('warning: verificarCuentaAmiga --> no hay cuentas asociadas');
   }
+  return -1;
+  console.log('warning: buscarCuentaAmiga -> la cuenta amiga no existe');
 }
 
 function buscarUsuario(usuario) {
@@ -184,6 +175,20 @@ function buscarUsuario(usuario) {
 //   }
 // }
 
+function retenerSaldo(idUsuario, retengo){
+// Esta funcion se utiliza tanto para tetener como para devolver el dinero deacuerdo si la
+// variable booleana retengo sea positiva o negativa.
+  if (retengo) {
+    datosDeUsuario[idUsuario].saldoCuentaRetenido = datosDeUsuario[idUsuario].saldoCuenta;
+    datosDeUsuario[idUsuario].saldoCuenta = 0;
+    console.log('info: retenerSaldo --> saldo retenido');
+  } else {
+    datosDeUsuario[idUsuario].saldoCuenta = datosDeUsuario[idUsuario].saldoCuentaRetenido
+    datosDeUsuario[idUsuario].saldoCuentaRetenido = 0;
+    console.log('info: retenerSaldo --> saldo habilitado');
+  }
+}
+
 //Ejecución de las funciones que actualizan los valores de las variables en el HTML
 iniciarSesion();
 cargarNombreEnPantalla();
@@ -197,6 +202,7 @@ function cambiarLimiteDeExtraccion() {
   if (validaPrompt(monto) && validaNumeroPositivo(monto)) {
       datosDeUsuario[indiceDeUsuario].limiteExtraccion = monto;
       alert('Su anterior limite de extraccion era $' + limiteAnterior + '\n Su nuevo limite de extraccion es $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
+      actualizarLimiteEnPantalla();
   }
 }
 
@@ -217,6 +223,7 @@ function extraerDinero() {
         } else {
           restarDinero(cantidadAExtraer);
           alert('Has extraido: $' + cantidadAExtraer+';\nSaldo anterior: $' + saldoAnterior + ';\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta + '.');
+          actualizarSaldoEnPantalla();
         }
   }
 }
@@ -297,10 +304,11 @@ function transferirDinero() {
     } else {
         cuenta= prompt('Ingrese el numero de cuenta al que desea transferir el dinero');
         //cuenta = parseInt(cuentaAmiga);
-        if (verficarCuentaAmiga(cuenta) === false){
+        if (buscarCuentaAmiga(cuenta) !== -1){
           alert('El numero de cuenta ingresado no existe en su lista de cuentas amigas');
         } else {
           restarDinero(cantidadATransferir);
+          //datosDeUsuario[indiceDeUsuario].cuentaAmiga[i]
           alert('Has transferido a la cuenta amiga:' + cuentaAmiga + '\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ cantidadATransferir + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
         }
     }
@@ -358,15 +366,15 @@ function iniciarSesion() {
 
 //Funciones que actualizan el valor de las variables en el HTML
 function cargarNombreEnPantalla() {
-    document.getElementById("nombre").innerHTML = "Bienvenido/a " + datosDeUsuario[indiceDeUsuario].nombreUsuario;
+  document.getElementById("nombre").innerHTML = "Bienvenido/a " + datosDeUsuario[indiceDeUsuario].nombreUsuario;
 }
 
 function actualizarSaldoEnPantalla() {
-console.log('info: actualizarSaldoEnPantalla --> Se loguea usuario con id:' + indiceDeUsuario);
-document.getElementById("saldo-cuenta").innerHTML = "$" + datosDeUsuario[indiceDeUsuario].saldoCuenta;
+  console.log('info: actualizarSaldoEnPantalla --> Se loguea usuario con id:' + indiceDeUsuario);
+  document.getElementById("saldo-cuenta").innerHTML = "$" + datosDeUsuario[indiceDeUsuario].saldoCuenta;
 }
 
 function actualizarLimiteEnPantalla() {
-    document.getElementById("limite-extraccion").innerHTML = "Tu límite de extracción es: $" + datosDeUsuario[indiceDeUsuario].limiteExtraccion;
+  document.getElementById("limite-extraccion").innerHTML = "Tu límite de extracción es: $" + datosDeUsuario[indiceDeUsuario].limiteExtraccion;
 }
 //tratando de arreglar el head desacoplado
