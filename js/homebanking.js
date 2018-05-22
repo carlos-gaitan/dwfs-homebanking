@@ -48,13 +48,13 @@ var datosDeUsuario = [
     {
       nombreUsuario: 'casu',
       claveUsuario: 0000,
-      saldoCuenta:0,
+      saldoCuenta:2000,
       saldoCuentaRetenido:0,
       limiteExtraccion:0,
       cuentaAmiga: [
           {
               nombre: 'Cuenta amiga 1',
-              numero: 12345678
+              numero: '12345678'
           },
           {
               nombre: 'Cuenta amiga 2',
@@ -66,7 +66,7 @@ var datosDeUsuario = [
           },
           {
               nombre: 'Cuenta amiga 3',
-              numero: 22222222
+              numero: '22222222'
           },
       ],
     },
@@ -79,7 +79,7 @@ var datosDeUsuario = [
       cuentaAmiga: [
           {
               nombre: 'Cuenta amiga 1',
-              numero: 12345678
+              numero: '12345678'
           },
           {
               nombre: 'Cuenta amiga 2',
@@ -104,10 +104,12 @@ function sumarDinero(cantidadASumar) {
   actualizarSaldoEnPantalla();
 }
 
+
 function restarDinero(cantidadARestar) {
   datosDeUsuario[indiceDeUsuario].saldoCuenta = datosDeUsuario[indiceDeUsuario].saldoCuenta - cantidadARestar;
   actualizarSaldoEnPantalla();
 }
+
 
 function validaPrompt(dato) {
   if(dato == null) {
@@ -123,6 +125,7 @@ function validaPrompt(dato) {
   }
 }
 
+
 function validaNumeroPositivo(dato) {
   if(dato > 0) {
     console.log('info: validaNumeroPositivo --> ingresa validado, numero positivo');
@@ -133,8 +136,6 @@ function validaNumeroPositivo(dato) {
       return false;
   }
 }
-
-
 
 
 function haySaldoDisponible(valor) {
@@ -151,6 +152,7 @@ function buscarCuentaAmiga(cuenta) {
   console.log('warning: buscarCuentaAmiga -> la cuenta amiga no existe');
 }
 
+
 function buscarUsuario(usuario) {
   for (var i = 0; i < datosDeUsuario.length; i++) {
     if (datosDeUsuario[i].nombreUsuario === usuario) {
@@ -160,6 +162,7 @@ function buscarUsuario(usuario) {
   return -1;
   console.log('warning: buscarUsuario -> el usuario no existe');
 }
+
 
 // viejaFuncionBuscarUsuario(usuario) es tan fea que no quise borrarla
 // function viejaFuncionBuscarUsuario(usuario) {
@@ -175,6 +178,7 @@ function buscarUsuario(usuario) {
 //   }
 // }
 
+
 function retenerSaldo(idUsuario, retengo){
 // Esta funcion se utiliza tanto para tetener como para devolver el dinero deacuerdo si la
 // variable booleana retengo sea positiva o negativa.
@@ -189,11 +193,13 @@ function retenerSaldo(idUsuario, retengo){
   }
 }
 
+
 //Ejecución de las funciones que actualizan los valores de las variables en el HTML
 iniciarSesion();
 cargarNombreEnPantalla();
 actualizarSaldoEnPantalla();
 actualizarLimiteEnPantalla();
+
 
 //Funciones que tenes que completar
 function cambiarLimiteDeExtraccion() {
@@ -205,6 +211,7 @@ function cambiarLimiteDeExtraccion() {
       actualizarLimiteEnPantalla();
   }
 }
+
 
 // TODO: estaria bueno que el limite de extraccion tenga un incremental durante el dia y que se valla sumando hasta el otro dia donde deberia volver a 0.
 function extraerDinero() {
@@ -228,6 +235,7 @@ function extraerDinero() {
   }
 }
 
+
 function depositarDinero() {
   var cantidadADepositar;
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
@@ -241,6 +249,7 @@ function depositarDinero() {
     }
   }
 }
+
 
 function pagarServicio() {
   var aguaImporte = 350;
@@ -295,6 +304,7 @@ function pagarServicio() {
   }
 }
 
+// FIXME: No funciona Grrrrrrrrrrrrrrrrrrrrr
 function transferirDinero() {
   var cantidadATransferir = prompt('Ingrese la cantidad de dinero que desea transferir');
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
@@ -302,18 +312,19 @@ function transferirDinero() {
     if (haySaldoDisponible(cantidadATransferir) === false) {
       alert('No hay saldo suficiente para realizar la transferencia');
     } else {
-        cuenta= prompt('Ingrese el numero de cuenta al que desea transferir el dinero');
-        //cuenta = parseInt(cuentaAmiga);
-        if (buscarCuentaAmiga(cuenta) !== -1){
+        cuentaDestino = prompt('Ingrese el numero de cuenta al que desea transferir el dinero');
+        //cuentaDestino = parseInt(cuentaDestino);
+        if (buscarCuentaAmiga(cuentaDestino) == -1){
           alert('El numero de cuenta ingresado no existe en su lista de cuentas amigas');
         } else {
           restarDinero(cantidadATransferir);
           //datosDeUsuario[indiceDeUsuario].cuentaAmiga[i]
-          alert('Has transferido a la cuenta amiga:' + cuentaAmiga + '\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ cantidadATransferir + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
+          alert('Has transferido a la cuenta amiga:' + cuentaDestino + '\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ cantidadATransferir + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
         }
     }
   }
 }
+
 
 function cerrarSesion() {
   localStorage.removeItem("indiceDeUsuario");
@@ -324,6 +335,7 @@ function cerrarSesion() {
   actualizarSaldoEnPantalla();
   actualizarLimiteEnPantalla();
 }
+
 
 function iniciarSesion() {
   var usuario;
@@ -364,17 +376,19 @@ function iniciarSesion() {
   }
 }
 
+
 //Funciones que actualizan el valor de las variables en el HTML
 function cargarNombreEnPantalla() {
   document.getElementById("nombre").innerHTML = "Bienvenido/a " + datosDeUsuario[indiceDeUsuario].nombreUsuario;
 }
+
 
 function actualizarSaldoEnPantalla() {
   console.log('info: actualizarSaldoEnPantalla --> Se loguea usuario con id:' + indiceDeUsuario);
   document.getElementById("saldo-cuenta").innerHTML = "$" + datosDeUsuario[indiceDeUsuario].saldoCuenta;
 }
 
+
 function actualizarLimiteEnPantalla() {
   document.getElementById("limite-extraccion").innerHTML = "Tu límite de extracción es: $" + datosDeUsuario[indiceDeUsuario].limiteExtraccion;
 }
-//tratando de arreglar el head desacoplado
