@@ -127,7 +127,7 @@ function validaPrompt(dato) {
 
 
 function validaNumeroPositivo(dato) {
-  if(dato > 0) {
+  if(!isNaN(dato) && dato > 0) {
     console.log('info: validaNumeroPositivo --> ingresa validado, numero positivo');
     return true;
   } else {
@@ -143,8 +143,9 @@ function haySaldoDisponible(valor) {
 }
 
 function buscarCuentaAmiga(cuenta) {
-  for (var i = 0; i < datosDeUsuario[indiceDeUsuario].cuentaAmiga.length; i++) {
-    if (datosDeUsuario[indiceDeUsuario].cuentaAmiga[i] === cuenta) {
+  var cuentasAmiga = datosDeUsuario[indiceDeUsuario].cuentaAmiga;
+  for (var i = 0; i < cuentasAmiga.length; i++) {
+    if (cuentasAmiga[i].numero === cuenta) {
       return i;
     }
   }
@@ -221,7 +222,7 @@ function extraerDinero() {
   if (validaPrompt(cantidadAExtraer) && validaNumeroPositivo(cantidadAExtraer)) {
     // TODO: Preguntar si estan bien puestos estos parseInt, si son al pedo o que!
     cantidadAExtraer = parseInt(cantidadAExtraer);
-    if (haySaldoDisponible(cantidadAExtraer) === false) {
+    if (!haySaldoDisponible(cantidadAExtraer)) {
       alert('No hay sufuciente saldo en la cuenta');
     } else if(cantidadAExtraer > datosDeUsuario[indiceDeUsuario].limiteExtraccion) {
         alert('No puede extraer mas de: $' + datosDeUsuario[indiceDeUsuario].limiteExtraccion);
