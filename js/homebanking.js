@@ -73,7 +73,7 @@ var datosDeUsuario = [
     {
       nombreUsuario: 'diego',
       claveUsuario: 0000,
-      saldoCuenta:0,
+      saldoCuenta:25900,
       saldoCuentaRetenido:0,
       limiteExtraccion:500,
       cuentaAmiga: [
@@ -196,11 +196,13 @@ function retenerSaldo(idUsuario, retengo){
 
 
 //Ejecución de las funciones que actualizan los valores de las variables en el HTML
-iniciarSesion();
-cargarNombreEnPantalla();
-actualizarSaldoEnPantalla();
-actualizarLimiteEnPantalla();
-
+if (localStorage.getItem("indiceDeUsuario")) {
+  cargarNombreEnPantalla();
+  actualizarSaldoEnPantalla();
+  actualizarLimiteEnPantalla();
+} else {
+  iniciarSesion();
+}
 
 //Funciones que tenes que completar
 function cambiarLimiteDeExtraccion() {
@@ -305,12 +307,12 @@ function pagarServicio() {
   }
 }
 
-// FIXME: No funciona Grrrrrrrrrrrrrrrrrrrrr
+
 function transferirDinero() {
   var cantidadATransferir = prompt('Ingrese la cantidad de dinero que desea transferir');
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
   if (validaPrompt(cantidadATransferir) && validaNumeroPositivo(cantidadATransferir)) {
-    if (haySaldoDisponible(cantidadATransferir) === false) {
+    if (!haySaldoDisponible(cantidadATransferir)) {
       alert('No hay saldo suficiente para realizar la transferencia');
     } else {
         cuentaDestino = prompt('Ingrese el numero de cuenta al que desea transferir el dinero');
@@ -361,10 +363,13 @@ function iniciarSesion() {
           localStorage.setItem("indiceDeUsuario", indiceDeUsuarioAuxiliar);
           console.log('info: iniciarSesion --> Se loguea usuario con id:' + indiceDeUsuario);
           alert('Bienvenido ' + usuario);
+          cargarNombreEnPantalla();
+          actualizarSaldoEnPantalla();
+          actualizarLimiteEnPantalla();
           // TODO: hay que hacer un flag de logueo
         } else {
           // TODO: falta hacer la funcion retener saldo y y borrar el localstorage
-          retenerSaldo(indiceDeUsuarioAuxiliar);
+          retenerSaldo(indiceDeUsuarioAuxiliar, true);
           localStorage.removeItem("indiceDeUsuario");
           alert(msgOperacionCancelada + 'y ademas le retenemos el saldo');
         }
