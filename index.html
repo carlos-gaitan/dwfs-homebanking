@@ -10,16 +10,17 @@
   <body>
     <div class="header">
       <img class="logo" src="img/logo.png"/>
-      <div id="bienvenido" class="align-left">
+      <div id="bienvenido" class="align-left oculto">
         <span id="nombre" class="oculto">Bienvenido/a</span>
+        <span id="nombre"><a class="entrar-salir" onclick="cerrarSesion()" href="#">Salir</a></span>
         <img class="avatar" src="img/avatar.svg"/>
       </div>
-      <div id="login" class="align-left oculto">
-        <span id="nombre"><a onclick="iniciarSesion()" href="#">Iniciar Sesion</a></span>
+      <div id="login" class="align-left">
+        <span id="nombre"><a class="entrar-salir" onclick="iniciarSesion()" href="#">Entrar</a></span>
         <img class="avatar" src="img/avatar.svg"/>
       </div>
     </div>
-    <div id="menuYDemas" class="white-container">
+    <div id="menuYDemas" class="white-container oculto">
       <div class="menu-container">
         <h1 class="tu-cuenta">Tu cuenta</h1>
         <button class="links" onclick="extraerDinero()">Extraer dinero</button>
@@ -27,8 +28,6 @@
         <button class="links" onclick="pagarServicio()">Pagar servicios</button>
         <button class="links" onclick="transferirDinero()">Transferir dinero</button>
         <button class="links" onclick="cambiarLimiteDeExtraccion()">Cambiar límite de extracción</button>
-        <button class="links" id="logout" onclick="cerrarSesion()">Cerrar sesión</button>
-        <button class="links" id="login" onclick="iniciarSesion()">Iniciar sesión</button>
       </div>
 
       <div class="green-container">
@@ -39,8 +38,8 @@
         </div>
       </div>
     </div>
-    <div id="publicidad" class="white-container-publicidad oculto">
-      <p>para publicitar comuniquese con elcharly</p>
+    <div id="publicidad" class="white-container-publicidad">
+      <img class="logo-publicidad" src="img/logo.png">
     </div>
   </body>
   <script type="text/javascript" src="js/homebanking.js"></script>

@@ -1,11 +1,13 @@
 // TODO: poner el evento para cargar el script despues que cargue el DOM
+// TODO: usar trim para sacar espacios antes y despues del string dato.trim()
+
 //Declaración de variables
 var msgOperacionCancelada = 'Operacion cancelada!';
 var indiceDeUsuario = -1;
 var datosDeUsuario = [
     {
-      nombreUsuario: '',
-      claveUsuario: 0000,
+      nombreUsuario: 'usuariodeplantillanoseusa',
+      claveUsuario: '·"$3245345fddsfsdf$%$"%&%$&%$',
       saldoCuenta:0,
       saldoCuentaRetenido:0,
       limiteExtraccion:0,
@@ -22,14 +24,14 @@ var datosDeUsuario = [
     },
     {
       nombreUsuario: 'elcharly',
-      claveUsuario: 0000,
+      claveUsuario: '0000',
       saldoCuenta:333333,
       saldoCuentaRetenido:0,
       limiteExtraccion:500,
       cuentaAmiga: [
           {
               nombre: 'Cuenta amiga 1',
-              numero: 12345678
+              numero: '12345678'
           },
           {
               nombre: 'Cuenta amiga 2',
@@ -37,17 +39,17 @@ var datosDeUsuario = [
           },
           {
               nombre: 'Cuenta amiga 3',
-              numero: 11111111
+              numero: '11111111'
           },
           {
               nombre: 'Cuenta amiga 3',
-              numero: 22222222
+              numero: '22222222'
           },
       ],
     },
     {
       nombreUsuario: 'casu',
-      claveUsuario: 0000,
+      claveUsuario: '1234',
       saldoCuenta:2000,
       saldoCuentaRetenido:0,
       limiteExtraccion:0,
@@ -62,7 +64,7 @@ var datosDeUsuario = [
           },
           {
               nombre: 'Cuenta amiga 3',
-              numero: 11111111
+              numero: '11111111'
           },
           {
               nombre: 'Cuenta amiga 3',
@@ -72,7 +74,7 @@ var datosDeUsuario = [
     },
     {
       nombreUsuario: 'diego',
-      claveUsuario: 0000,
+      claveUsuario: '1111',
       saldoCuenta:25900,
       saldoCuentaRetenido:0,
       limiteExtraccion:500,
@@ -87,11 +89,11 @@ var datosDeUsuario = [
           },
           {
               nombre: 'Cuenta amiga 3',
-              numero: 11111111
+              numero: '11111111'
           },
           {
               nombre: 'Cuenta amiga 3',
-              numero: 22222222
+              numero: '22222222'
           },
       ],
     },
@@ -112,7 +114,6 @@ function restarDinero(cantidadARestar) {
 
 
 function validaPrompt(dato) {
-// TODO: usar trim para sacar espacios dato.trim()
   if(dato == null) {
     console.log('warning: validaPrompt --> cancela operacion');
     alert('Operacion cancelada');
@@ -129,7 +130,7 @@ function validaPrompt(dato) {
 
 function validaNumeroPositivo(dato) {
   if(!isNaN(dato) && dato > 0) {
-    console.log('info: validaNumeroPositivo --> ingresa validado, numero positivo');
+    console.log('info: validaNumeroPositivo --> ingreso valido, numero positivo');
     return true;
   } else {
       console.log('warning: validaNumeroPositivo --> ingresa numero negativo o 0, se cancela operacion');
@@ -182,7 +183,7 @@ function buscarUsuario(usuario) {
 
 
 function retenerSaldo(idUsuario, retengo){
-// Esta funcion se utiliza tanto para tetener como para devolver el dinero deacuerdo si la
+// README: Esta funcion se utiliza tanto para retener como para devolver el dinero deacuerdo si la
 // variable booleana retengo sea positiva o negativa.
   if (retengo) {
     datosDeUsuario[idUsuario].saldoCuentaRetenido = datosDeUsuario[idUsuario].saldoCuenta;
@@ -195,28 +196,35 @@ function retenerSaldo(idUsuario, retengo){
   }
 }
 
+
 function ocultarElementos(elementos) {
   for (var i = 0; i < elementos.length; i++) {
     //var elementoDom = document.querySelector(elementos[i]);
     var elementoDom = document.getElementById(elementos[i]);
-    elementoDom.classList.toggle('oculto');
+    elementoDom.classList.add('oculto');
+  }
+}
+
+
+function mostrarElementos(elementos) {
+  for (var i = 0; i < elementos.length; i++) {
+    //var elementoDom = document.querySelector(elementos[i]);
+    var elementoDom = document.getElementById(elementos[i]);
+    elementoDom.classList.remove('oculto');
   }
 }
 
 
 //Ejecución de las funciones que actualizan los valores de las variables en el HTML
-ocultarElementos(['publicidad', 'menuYDemas', 'bienvenido', 'login']);
 if (localStorage.getItem("indiceDeUsuario")) {
+  indiceDeUsuario = localStorage.getItem("indiceDeUsuario");
+  mostrarElementos(['menuYDemas', 'bienvenido']);
   cargarNombreEnPantalla();
   actualizarSaldoEnPantalla();
   actualizarLimiteEnPantalla();
-} else {
-  // TODO:
-  //hide hb,
-  //mostrar contenedor publicidad,
-  //mostrar boton login
-  //iniciarSesion();
+  ocultarElementos(['publicidad', 'login']);
 }
+
 
 //Funciones que tenes que completar
 function cambiarLimiteDeExtraccion() {
@@ -325,17 +333,19 @@ function pagarServicio() {
 function transferirDinero() {
   var cantidadATransferir = prompt('Ingrese la cantidad de dinero que desea transferir');
   var saldoAnterior = datosDeUsuario[indiceDeUsuario].saldoCuenta;
+  var listaCuentasAmigas = '';
   if (validaPrompt(cantidadATransferir) && validaNumeroPositivo(cantidadATransferir)) {
     if (!haySaldoDisponible(cantidadATransferir)) {
       alert('No hay saldo suficiente para realizar la transferencia');
     } else {
-        cuentaDestino = prompt('Ingrese el numero de cuenta al que desea transferir el dinero');
-        //cuentaDestino = parseInt(cuentaDestino);
+        for (var i = 0; i < datosDeUsuario[indiceDeUsuario].cuentaAmiga.length; i++) {
+          listaCuentasAmigas += datosDeUsuario[indiceDeUsuario].cuentaAmiga[i].nombre + ': ' + datosDeUsuario[indiceDeUsuario].cuentaAmiga[i].numero + ' | ';
+        }
+        cuentaDestino = prompt('Ingrese el numero de cuenta al que desea transferir el dinero:\n' + listaCuentasAmigas);
         if (buscarCuentaAmiga(cuentaDestino) == -1){
           alert('El numero de cuenta ingresado no existe en su lista de cuentas amigas');
         } else {
           restarDinero(cantidadATransferir);
-          //datosDeUsuario[indiceDeUsuario].cuentaAmiga[i]
           alert('Has transferido a la cuenta amiga:' + cuentaDestino + '\nSaldo anterior: $' + saldoAnterior +'\nDinero descontado: $'+ cantidadATransferir + '\nSaldo actual: $' + datosDeUsuario[indiceDeUsuario].saldoCuenta);
         }
     }
@@ -344,10 +354,13 @@ function transferirDinero() {
 
 
 function cerrarSesion() {
+  console.log('info: cerrarSesion --> Se elimina localStorage de usuario con id:' + indiceDeUsuario);
   localStorage.removeItem("indiceDeUsuario");
   indiceDeUsuario = -1;
   alert('Gracias por utilizar nuestros servicios, Se cerro su sesion, 0800-BANCO-GAITAN');
-  ocultarElementos(['publicidad', 'menuYDemas', 'bienvenido', 'login']);
+  ocultarElementos(['menuYDemas', 'bienvenido']);
+  mostrarElementos(['publicidad', 'login']);
+
 }
 
 
@@ -373,14 +386,14 @@ function iniciarSesion() {
           indiceDeUsuario = indiceDeUsuarioAuxiliar;
           localStorage.setItem("indiceDeUsuario", indiceDeUsuarioAuxiliar);
           console.log('info: iniciarSesion --> Se loguea usuario con id:' + indiceDeUsuario);
-          ocultarElementos(['publicidad', 'menuYDemas', 'bienvenido', 'login']);
+          //ocultarElementos(['publicidad', 'menuYDemas', 'bienvenido', 'login']);
+          mostrarElementos(['menuYDemas', 'bienvenido']);
+          ocultarElementos(['publicidad', 'login']);
           alert('Bienvenido ' + usuario);
           cargarNombreEnPantalla();
           actualizarSaldoEnPantalla();
           actualizarLimiteEnPantalla();
-          // TODO: hay que hacer un flag de logueo
         } else {
-          // TODO: falta hacer la funcion retener saldo y y borrar el localstorage
           retenerSaldo(indiceDeUsuarioAuxiliar, true);
           localStorage.removeItem("indiceDeUsuario");
           alert(msgOperacionCancelada + 'y ademas le retenemos el saldo');
@@ -397,16 +410,18 @@ function iniciarSesion() {
 
 //Funciones que actualizan el valor de las variables en el HTML
 function cargarNombreEnPantalla() {
+  console.log('info: cargarNombreEnPantalla --> Se carga nombre en pantalla de usuario con id:' + indiceDeUsuario);
   document.getElementById("nombre").innerHTML = "Bienvenido/a " + datosDeUsuario[indiceDeUsuario].nombreUsuario;
 }
 
 
 function actualizarSaldoEnPantalla() {
-  console.log('info: actualizarSaldoEnPantalla --> Se loguea usuario con id:' + indiceDeUsuario);
+  console.log('info: actualizarSaldoEnPantalla --> Se actualiza saldo en pantalla de usuario con id:' + indiceDeUsuario);
   document.getElementById("saldo-cuenta").innerHTML = "$" + datosDeUsuario[indiceDeUsuario].saldoCuenta;
 }
 
 
 function actualizarLimiteEnPantalla() {
+  console.log('info: actualizarLimiteEnPantalla --> Se actualiza limite en pantalla de usuario con id:' + indiceDeUsuario);
   document.getElementById("limite-extraccion").innerHTML = "Tu límite de extracción es: $" + datosDeUsuario[indiceDeUsuario].limiteExtraccion;
 }
