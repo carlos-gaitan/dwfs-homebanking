@@ -112,6 +112,7 @@ function restarDinero(cantidadARestar) {
 
 
 function validaPrompt(dato) {
+// TODO: usar trim para sacar espacios dato.trim()
   if(dato == null) {
     console.log('warning: validaPrompt --> cancela operacion');
     alert('Operacion cancelada');
@@ -194,14 +195,27 @@ function retenerSaldo(idUsuario, retengo){
   }
 }
 
+function ocultarElementos(elementos) {
+  for (var i = 0; i < elementos.length; i++) {
+    //var elementoDom = document.querySelector(elementos[i]);
+    var elementoDom = document.getElementById(elementos[i]);
+    elementoDom.classList.toggle('oculto');
+  }
+}
+
 
 //Ejecución de las funciones que actualizan los valores de las variables en el HTML
+ocultarElementos(['publicidad', 'menuYDemas', 'bienvenido', 'login']);
 if (localStorage.getItem("indiceDeUsuario")) {
   cargarNombreEnPantalla();
   actualizarSaldoEnPantalla();
   actualizarLimiteEnPantalla();
 } else {
-  iniciarSesion();
+  // TODO:
+  //hide hb,
+  //mostrar contenedor publicidad,
+  //mostrar boton login
+  //iniciarSesion();
 }
 
 //Funciones que tenes que completar
@@ -333,10 +347,7 @@ function cerrarSesion() {
   localStorage.removeItem("indiceDeUsuario");
   indiceDeUsuario = -1;
   alert('Gracias por utilizar nuestros servicios, Se cerro su sesion, 0800-BANCO-GAITAN');
-  iniciarSesion();
-  cargarNombreEnPantalla();
-  actualizarSaldoEnPantalla();
-  actualizarLimiteEnPantalla();
+  ocultarElementos(['publicidad', 'menuYDemas', 'bienvenido', 'login']);
 }
 
 
@@ -362,6 +373,7 @@ function iniciarSesion() {
           indiceDeUsuario = indiceDeUsuarioAuxiliar;
           localStorage.setItem("indiceDeUsuario", indiceDeUsuarioAuxiliar);
           console.log('info: iniciarSesion --> Se loguea usuario con id:' + indiceDeUsuario);
+          ocultarElementos(['publicidad', 'menuYDemas', 'bienvenido', 'login']);
           alert('Bienvenido ' + usuario);
           cargarNombreEnPantalla();
           actualizarSaldoEnPantalla();
